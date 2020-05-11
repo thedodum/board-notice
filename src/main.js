@@ -5,10 +5,14 @@ import App from './App'
 import router from './router'
 import axios from 'axios'
 import Paginate from 'vuejs-paginate'
+// import { ValidationProvider, extend } from 'vee-validate';
 
 Vue.config.productionTip = false
 Vue.prototype.$http = axios;
 Vue.component('paginate', Paginate);
+
+// Vue.component('ValidationProvider', ValidationProvider);
+
 
 /* eslint-disable no-new */
 new Vue({

@@ -4,7 +4,7 @@
       <h1>write</h1>
 
       <form role="form">
-        <table class="table">
+        <table class="table text-left">
           <caption></caption>
           <colgroup>
             <col width="150">
@@ -14,7 +14,10 @@
           <tr>
             <th>제목</th>
             <td>
-              <input type="text" class="form-control" placeholder="" v-model="title">
+              <validation-provider rules="minmax:3,8" v-slot="{ errors }">
+                <input type="text" class="form-control" placeholder="" v-model="title">
+                <span class="text-danger">{{ errors[0] }}</span>
+              </validation-provider>
             </td>
           </tr>
           <tr>
@@ -26,7 +29,7 @@
           <tr>
             <th>첨부파일</th>
             <td>
-              <input type="file" class="form-control" v-on:change="fileSelect()" ref="uploadfile">
+              <input type="file" id="file-upload" class="form-control" v-on:change="fileSelect()" ref="listUploadFile">
             </td>
           </tr>
           </tbody>
@@ -44,7 +47,9 @@
 </template>
 
 <script>
-  // todoList 컴포넌트 import
+  import { ValidationProvider, extend } from 'vee-validate';
+  import { required } from 'vee-validate/dist/rules';
+
   export default {
     name: 'boardWrite',
     data(){
@@ -53,7 +58,8 @@
         desc: '',
         date: '',
         arr_list: [],
-        uploadfile: null
+        listUploadFile: null,
+        value: ''
       }
     },
     mounted(){
@@ -66,7 +72,7 @@
             title: title,
             desc: desc,
             date: new Date().toISOString().substr(0, 10).replace('T', ' '),
-            filename: this.uploadfile.name,
+            filename: this.listUploadFile.name,
             fileurl: "http://www.neoforth.com"
           }).then((res) => {
             // console.log(res);
@@ -76,13 +82,61 @@
             this.$router.push('/');
           })
         }
+
+        // this.submit();
       },
       fileSelect(){
-        this.uploadfile = this.$refs.uploadfile.files[0];
+        this.listUploadFile = this.$refs.listUploadFile.files[0];
+      },
+      submit(){
+        const formData = new FormData();
+        formData.append('listTitle', this.title);
+        formData.append('listContents', this.desc);
+        formData.append('listUploadFile', this.listUploadFile);
 
+        for (let key of formData.entries()) {
+          console.log(key);
+        }
+
+        this.$http.post('http://localhost:3000/boardListData', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          }
+        }).then((res) => {
+          console.log(res);
+
+        }).catch((err) => {
+          console.log(err);
+        })
       }
-    }
+    },
+    components: {
+      ValidationProvider
+    },
   }
+
+  extend('positive', value => {
+    return value >= 0;
+  });
+
+  extend('odd', value => {
+    return value % 2 !== 0;
+  });
+
+  extend('min', {
+    validate(value, args){
+      return value.length >= args.length;
+    },
+    params: ['length']
+  });
+
+  extend('minmax', {
+    validate(value, args){
+      // const length = value.length;
+      return value.length >= args.min && value.length <= args.max;
+    },
+    params: ['min', 'max']
+  });
 </script>
 
 <style scoped>
