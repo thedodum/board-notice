@@ -1,4 +1,4 @@
-# vue-todo
+# BOARD - NOTICE
 
 > example
 
