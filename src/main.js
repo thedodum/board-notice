@@ -6,10 +6,13 @@ import router from './router'
 import axios from 'axios'
 import Paginate from 'vuejs-paginate'
 // import { ValidationProvider, extend } from 'vee-validate';
+import 'es6-promise/auto';
 
 Vue.config.productionTip = false
 Vue.prototype.$http = axios;
 Vue.component('paginate', Paginate);
+
+// Vue.use(Vuex);
 
 // Vue.component('ValidationProvider', ValidationProvider);
 
